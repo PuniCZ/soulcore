@@ -116,13 +116,32 @@ class boss_auriaya : public CreatureScript
                 defenderLives = 8;
                 crazyCatLady = true;
                 nineLives = false;
+				/* soulcore start */
+				for (uint8 i = 0; i < SENTRY_NUMBER; ++i)
+				{	
+					if (Creature* pSentri = me->SummonCreature(NPC_SANCTUM_SENTRY,me->GetPositionX(),me->GetPositionY(),me->GetPositionZ(),0, TEMPSUMMON_CORPSE_DESPAWN, 0))
+                       switch(i)
+                       {
+						   case 0: pSentri->GetMotionMaster()->MoveFollow(me,3.0f,M_PI*1.25f);
+								break;
+						   case 1: pSentri->GetMotionMaster()->MoveFollow(me,3.0f,-1.25f*M_PI);
+							    break;
+						   case 2: pSentri->GetMotionMaster()->MoveFollow(me,1.0f,M_PI*1.25f);
+								break;
+						   case 3: pSentri->GetMotionMaster()->MoveFollow(me,1.0f,-1.25f*M_PI);
+							    break;
+					   }
+				}				
+				/*\soulcore end */
             }
 
             void EnterCombat(Unit* /*who*/) OVERRIDE
             {
                 _EnterCombat();
                 Talk(SAY_AGGRO);
-
+				/* soucore */
+				me->RemoveUnitMovementFlag(MOVEMENTFLAG_WALKING);
+                /*\soulcore*/
                 events.ScheduleEvent(EVENT_SCREECH, urand(45000, 65000));
                 events.ScheduleEvent(EVENT_BLAST, urand(20000, 25000));
                 events.ScheduleEvent(EVENT_TERRIFYING, urand(20000, 30000));
@@ -140,7 +159,13 @@ class boss_auriaya : public CreatureScript
             void JustSummoned(Creature* summoned) OVERRIDE
             {
                 summons.Summon(summoned);
-
+				/* soulcore start */
+				if (summoned->GetEntry() == NPC_SANCTUM_SENTRY)
+				{	
+					summoned->GetMotionMaster()->MoveFollow(me,3.0f,M_PI);
+					summoned->GetMotionMaster()->MoveFollow(me,3.0f,M_PI / 2 + M_PI);
+                }
+				/*\soulcore end */
                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 0.0f, true))
                 {
                     summoned->AI()->AttackStart(target);
@@ -340,6 +365,10 @@ class npc_sanctum_sentry : public CreatureScript
             void EnterCombat(Unit* /*who*/) OVERRIDE
             {
                 DoCast(me, SPELL_STRENGHT_PACK, true);
+				/* soulcore */
+				if (Creature* Auriaya = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_AURIAYA)))
+                    Auriaya->SetInCombatWithZone();
+				/*\soulcore */
             }
 
             void UpdateAI(uint32 diff) OVERRIDE
