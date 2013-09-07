@@ -82,7 +82,10 @@ enum UlduarNPCs
     // Mimiron
     NPC_LEVIATHAN_MKII                      = 33432,
     NPC_VX_001                              = 33651,
-    NPC_AERIAL_COMMAND_UNIT                 = 33670,
+    NPC_AERIAL_COMMAND_UNIT                 = 33670,   
+	NPC_MAGNETIC_CORE            = 34068,
+	NPC_LASER_TARGET             = 34181, 
+	NPC_LASER_TARGET_HELPER      = 134181,
 
     // Freya's Keepers
     NPC_IRONBRANCH                          = 32913,
@@ -117,6 +120,14 @@ enum UlduarNPCs
     NPC_NATURES_BLADE                       = 33527,
     NPC_GUARDIAN_OF_LIFE                    = 33528,
 
+	/* soulcore */
+	// Thorim's minibosses
+    NPC_RUNE_GIANT               = 32873,
+    NPC_RUNIC_COLOSSUS           = 32872,
+	NPC_THORIM_SIF               = 33196, 
+	// Thorim hepler npcs
+	NPC_THORIM_CONTROLLER        = 32879,     
+	/*\soulcore */
     // Yogg-Saron
     NPC_SARA                                = 33134,
     NPC_GUARDIAN_OF_YOGG_SARON              = 33136,
@@ -188,6 +199,10 @@ enum UlduarGameObjects
     GO_RAZOR_BROKEN_HARPOON                 = 194565,
     GO_HODIR_DOOR                           = 194634,
     GO_HODIR_ICE_DOOR                       = 194441,
+	/* soulcore */
+	GO_HODIR_OUT_DOOR                     = 194634,
+    GO_IRON_COUNCIL_DOOR                  = 194554,
+	/*\soulcore */
     GO_ARCHIVUM_DOOR                        = 194556,
     GO_MIMIRON_TRAIN                        = 194675,
     GO_MIMIRON_ELEVATOR                     = 194749,
@@ -195,6 +210,13 @@ enum UlduarGameObjects
     GO_MIMIRON_DOOR_2                       = 194774,
     GO_MIMIRON_DOOR_3                       = 194775,
     GO_BIG_RED_BUTTON                       = 194739,
+	/* soulcore */
+	GO_RUNIC_DOOR                         = 194557,
+    GO_STONE_DOOR                         = 194558,
+    GO_THORIM_LEVER                       = 194264,
+    GO_DARK_IRON_PORTCULLIS               = 194560,
+    GO_LIGHTNING_FIELD                    = 194559,
+	/*\soulcore */
     // Yogg-Saron
     GO_YOGG_SARON_DOOR                      = 194773,
     GO_BRAIN_ROOM_DOOR_1                    = 194635,
@@ -310,6 +332,11 @@ enum UlduarData
     DATA_CALL_TRAM,
     DATA_VX_001,
     DATA_MAGNETIC_CORE,
+	/* soulcore*/
+	DATA_LASER_TARGET,
+    DATA_LASER_TARGET_HELPER,
+    DATA_MIMIRON_PORT
+	/*\soulcore */
 };
 
 enum UlduarWorldStates

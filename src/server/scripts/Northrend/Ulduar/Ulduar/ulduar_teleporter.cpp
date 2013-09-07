@@ -105,6 +105,14 @@ public:
                 case CONSERVATORY:
                     player->TeleportTo(603, 2086.27f, -24.3134f, 421.239f, 0.0f);
                     player->CLOSE_GOSSIP_MENU();
+                    break;                
+				case SPARK:
+                    player->TeleportTo(603, 2518.129883f, 2569.340088f, 412.38199f, 0.0f);
+                    player->CLOSE_GOSSIP_MENU();
+                    break;
+                case MADNESS:
+                    player->TeleportTo(603, 1854.819946f, -11.560800f, 334.175f, 0.0f);
+                    player->CLOSE_GOSSIP_MENU();
                     break;
             }
 
@@ -118,7 +126,7 @@ public:
             {
                 if (instance->GetData(DATA_COLOSSUS) == 2) //count of 2 collossus death
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
-                if (instance->GetBossState(BOSS_LEVIATHAN) == DONE)
+                //if (instance->GetBossState(BOSS_LEVIATHAN) == DONE)
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
                 if (instance->GetBossState(BOSS_XT002) == DONE)
                 {
@@ -129,6 +137,11 @@ public:
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
                 if (instance->GetBossState(BOSS_AURIAYA) == DONE)
                     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
+				if (instance->GetData(DATA_MIMIRON_PORT))
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the The Spark of Imagination", GOSSIP_SENDER_MAIN, SPARK);
+                if (instance->GetBossState(BOSS_VEZAX) == DONE)
+                    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "Teleport to the Descent into Madness", GOSSIP_SENDER_MAIN, MADNESS);
+      
             }
 
             player->SEND_GOSSIP_MENU(gameObject->GetGOInfo()->GetGossipMenuId(), gameObject->GetGUID());
