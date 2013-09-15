@@ -3201,7 +3201,7 @@ public:
 				default:  break;
 			}
 
-			handler->PSendSysMessage("Target player (Name: %s) has RP state: %s", tarPlr->GetName(), s.c_str());
+			handler->PSendSysMessage("Target player (Name: %s) has RP state: %s", tarPlr->GetName().c_str(), s.c_str());
 			return true;
 		}
 		else if (argstr == "all")
