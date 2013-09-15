@@ -121,8 +121,11 @@ public:
             { "unpossess",          SEC_ADMINISTRATOR,      false, HandleUnPossessCommand,              "", NULL },
             { "bindsight",          SEC_ADMINISTRATOR,      false, HandleBindSightCommand,              "", NULL },
             { "unbindsight",        SEC_ADMINISTRATOR,      false, HandleUnbindSightCommand,            "", NULL },
-            { "playall",            SEC_GAMEMASTER,         false, HandlePlayAllCommand,                "", NULL },
-            { NULL,                 0,                      false, NULL,                                "", NULL }
+            { "playall",            SEC_GAMEMASTER,         false, HandlePlayAllCommand,                "", NULL },            
+            /* soulcore */
+            { "rp",					SEC_PLAYER,             false, &HandleRpCommand,					"", NULL },
+            /*\soulcore */
+            { NULL,                 0,                      false, NULL,                                "", NULL } 
         };
         return commandTable;
     }
@@ -3153,6 +3156,81 @@ public:
         player->StopCastingBindSight();
         return true;
     }
+
+	
+    /* soulcore */
+	static bool HandleRpCommand(ChatHandler* handler, char const*  args)
+	{
+		if (!*args)
+		{
+			handler->PSendSysMessage("Unknown subcommand. Use 'all'/'on'/'off' to switch your RP state. Use 'self' print your RP state, 'target' print target's RP state");
+			return true;
+		}
+
+		std::string argstr = (char*)args;
+		RpState state;
+		if (argstr == "self")
+		{
+			std::string s;
+			switch (handler->GetSession()->GetPlayer()->GetRpState())
+			{
+				case RP_STATE_ALL: s = "all"; break;
+				case RP_STATE_ON: s = "on"; break;
+				case RP_STATE_OFF: s = "off"; break;
+				default: break;
+			}
+
+			handler->PSendSysMessage("Your RP state is : %s", s.c_str());
+			return true;
+		}
+		else if (argstr == "target")
+		{
+			Player* tarPlr = handler->getSelectedPlayer();
+			if (!tarPlr)
+			{
+				handler->PSendSysMessage(LANG_NO_CHAR_SELECTED);
+				return false;
+			}
+
+			std::string s;
+			switch (tarPlr->GetRpState())
+			{
+				case RP_STATE_ALL: s = "all"; break;
+				case RP_STATE_ON: s = "on"; break;
+				case RP_STATE_OFF: s = "off"; break;
+				default:  break;
+			}
+
+			handler->PSendSysMessage("Target player (Name: %s) has RP state: %s", tarPlr->GetName(), s.c_str());
+			return true;
+		}
+		else if (argstr == "all")
+		{
+			state = RP_STATE_ALL;
+			handler->PSendSysMessage("Your RP state is now set to: all");
+		}
+		else if (argstr == "on")
+		{
+			state = RP_STATE_ON;
+			handler->PSendSysMessage("Your RP state is now set to: on");
+		}
+		else if (argstr == "off"){
+			state = RP_STATE_OFF;
+			handler->PSendSysMessage("Your RP state is now set to: off");
+		}        
+		else
+		{
+			handler->PSendSysMessage("Unknown subcommand. Use 'all'/'on'/'off' to switch your RP state. Use 'self' print your RP state, 'target' print target's RP state");
+			return true;
+		}
+
+		CharacterDatabase.PExecute("UPDATE characters SET rpState = '%u' WHERE guid = '%u'", uint8(state), handler->GetSession()->GetPlayer()->GetGUIDLow());
+		handler->GetSession()->GetPlayer()->SetRpState(state);
+		return true;
+	}
+    /*\soulcore */
+
+
 };
 
 void AddSC_misc_commandscript()
