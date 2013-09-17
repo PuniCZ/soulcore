@@ -186,6 +186,15 @@ enum ReputationSource
     REPUTATION_SOURCE_SPELL
 };
 
+/* soulcore */
+enum RpState
+{
+    RP_STATE_ALL    = 0,
+    RP_STATE_ON     = 1,
+    RP_STATE_OFF    = 2
+};
+/*\soulcore */
+
 #define ACTION_BUTTON_ACTION(X) (uint32(X) & 0x00FFFFFF)
 #define ACTION_BUTTON_TYPE(X)   ((uint32(X) & 0xFF000000) >> 24)
 #define MAX_ACTION_BUTTON_ACTION_VALUE (0x00FFFFFF+1)
@@ -2370,6 +2379,10 @@ class Player : public Unit, public GridObject<Player>
         bool IsInWhisperWhiteList(uint64 guid);
         void RemoveFromWhisperWhiteList(uint64 guid) { WhisperList.remove(guid); }
 
+		/* soulcore */
+		RpState GetRpState() const { return rpState; }
+        void SetRpState(RpState state) { rpState = state; }
+		/*\soulcore */
         /*! These methods send different packets to the client in apply and unapply case.
             These methods are only sent to the current unit.
         */
@@ -2724,6 +2737,12 @@ class Player : public Unit, public GridObject<Player>
         uint32 _pendingBindTimer;
 
         uint32 _activeCheats;
+
+        /* soulcore */
+		RpState rpState;
+       /* float m_customScaleMod;
+        bool  m_customScaleActive;  */        
+        /*\soulcore */
 };
 
 void AddItemsSetItem(Player*player, Item* item);

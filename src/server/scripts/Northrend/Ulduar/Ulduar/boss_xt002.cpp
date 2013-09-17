@@ -214,7 +214,29 @@ class boss_xt002 : public CreatureScript
                 _healthRecovered = false;
                 _gravityBombCasualty = false;
                 _hardMode = false;
+                
+                /* soulcore */
+				Creature * pTarget;
+                while( (pTarget = me->FindNearestCreature(NPC_VOID_ZONE, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_LIFE_SPARK, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_XS013_SCRAPBOT, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_XM024_PUMMELLER, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_XE321_BOOMBOT, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
 
+                Unit* heart = me->GetVehicleKit() ? me->GetVehicleKit()->GetPassenger(HEART_VEHICLE_SEAT_EXPOSED) : NULL;
+                if (heart)
+                {
+                    heart->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+                    heart->RemoveAurasDueToSpell(SPELL_EXPOSED_HEART);
+                    heart->ChangeSeat(HEART_VEHICLE_SEAT_NORMAL, false);
+                }
+                
+                /*\soulcore */
                 _phase = 1;
                 _heartExposed = 0;
 
@@ -223,7 +245,15 @@ class boss_xt002 : public CreatureScript
 
                 instance->DoStopTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_MUST_DECONSTRUCT_FASTER);
             }
-
+            
+                    /* soulcore */
+            void JustSummoned(Creature* summon)
+            {
+                if (summon->GetEntry() == NPC_VOID_ZONE)
+					summon->DespawnOrUnsummon(180000);
+            }
+            
+                    /*\soulcore */
             void EnterCombat(Unit* /*who*/) OVERRIDE
             {
                 Talk(SAY_AGGRO);
@@ -246,7 +276,16 @@ class boss_xt002 : public CreatureScript
                 switch (action)
                 {
                     case ACTION_ENTER_HARD_MODE:
-                        events.ScheduleEvent(EVENT_ENTER_HARD_MODE, 1);
+                    /* soulcore */
+                     if (!_hardMode)
+                        {
+                            _hardMode = true;
+                            events.ScheduleEvent(EVENT_ENTER_HARD_MODE, 1);
+                        }
+                    /*    break;
+                    case ACTION_STOP_ACHIEVEMENT:
+                        _healthRecovered = true;*/
+                    /*\soulcore*/
                         break;
                 }
             }
@@ -259,7 +298,22 @@ class boss_xt002 : public CreatureScript
 
             void JustDied(Unit* /*killer*/) OVERRIDE
             {
-                Talk(SAY_DEATH);
+                Talk(SAY_DEATH);     
+                /* soulcore */                
+                Creature * pTarget;
+                
+                while( (pTarget = me->FindNearestCreature(NPC_VOID_ZONE, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_LIFE_SPARK, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_XS013_SCRAPBOT, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_XM024_PUMMELLER, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                while( (pTarget = me->FindNearestCreature(NPC_XE321_BOOMBOT, 100.0f, true)) )
+                    pTarget->DespawnOrUnsummon();
+                /*\soulcore */
+                
                 _JustDied();
             }
 
@@ -301,6 +355,26 @@ class boss_xt002 : public CreatureScript
                             DoCast(SPELL_TYMPANIC_TANTRUM);
                             events.ScheduleEvent(EVENT_TYMPANIC_TANTRUM, urand(TIMER_TYMPANIC_TANTRUM_MIN, TIMER_TYMPANIC_TANTRUM_MAX));
                             break;
+                        /* soulcore */
+                       /* case EVENT_HEART_PHASE:
+                            DoScriptText(SAY_HEART_OPENED, me);
+
+                            DoCast(me, SPELL_SUBMERGE);  // WIll make creature untargetable
+                            if (Vehicle * xt002 = me->GetVehicleKit())
+                                xt002->RelocatePassengers(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
+                            me->AttackStop();
+                            me->SetReactState(REACT_PASSIVE);
+
+                            events.ScheduleEvent(EVENT_EXPOSE_HEART, TIMER_EXPOSE_HEART);
+
+                            events.CancelEvent(EVENT_SEARING_LIGHT);
+                            events.CancelEvent(EVENT_GRAVITY_BOMB);
+                            events.CancelEvent(EVENT_TYMPANIC_TANTRUM);
+                            break;
+                        case EVENT_EXPOSE_HEART:
+                            ExposeHeart();
+                            break;     */
+                        /*\soulcore */
                         case EVENT_DISPOSE_HEART:
                             SetPhaseOne();
                             break;
@@ -379,7 +453,8 @@ class boss_xt002 : public CreatureScript
                     heart->CastSpell(me, SPELL_HEART_LIGHTNING_TETHER, false);
                     heart->CastSpell(heart, SPELL_HEART_HEAL_TO_FULL, true);
                     heart->CastSpell(heart, SPELL_EXPOSED_HEART, false);    // Channeled
-                    heart->ChangeSeat(HEART_VEHICLE_SEAT_EXPOSED, true);
+                    heart->ChangeSeat(HEART_VEHICLE_SEAT_EXPOSED, true);      
+                    ((Creature *) heart)->AI()->DoZoneInCombat();  // soulcore
                     heart->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     heart->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_29);
                }
@@ -450,7 +525,7 @@ class npc_xt002_heart : public CreatureScript
 {
     public:
         npc_xt002_heart() : CreatureScript("npc_xt002_heart") { }
-
+        
         struct npc_xt002_heartAI : public ScriptedAI
         {
             npc_xt002_heartAI(Creature* creature) : ScriptedAI(creature),

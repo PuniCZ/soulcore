@@ -243,6 +243,9 @@ void AIRelocationNotifier::Visit(CreatureMapType &m)
 
 void MessageDistDeliverer::Visit(PlayerMapType &m)
 {
+    /* soulcore */
+    RpState sourceRp = i_source->GetTypeId() == TYPEID_PLAYER ? ((Player*)i_source)->GetRpState() : RP_STATE_ALL;
+    /*\soulcore */
     for (PlayerMapType::iterator iter = m.begin(); iter != m.end(); ++iter)
     {
         Player* target = iter->GetSource();
@@ -251,6 +254,38 @@ void MessageDistDeliverer::Visit(PlayerMapType &m)
 
         if (target->GetExactDist2dSq(i_source) > i_distSq)
             continue;
+
+
+        /* soulcore */
+        uint8 msgtype;
+        i_message->rpos(0);
+        *i_message >> msgtype;
+        i_message->rpos(0);
+        bool shouldStop = false;
+        
+        switch(msgtype)
+        {
+            case CHAT_MSG_SAY:
+            case CHAT_MSG_YELL:
+            case CHAT_MSG_EMOTE:
+            {
+                switch(target->GetRpState())
+                {
+                    case RP_STATE_ON:  shouldStop = sourceRp != RP_STATE_ON; break;
+                    case RP_STATE_OFF: shouldStop = sourceRp == RP_STATE_ON; break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            default:
+                break;
+        }
+
+        if (shouldStop)
+            continue;
+        /*\soulcore */
+
 
         // Send packet to all who are sharing the player's vision
         if (target->HasSharedVision())
