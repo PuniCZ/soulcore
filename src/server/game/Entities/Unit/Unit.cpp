@@ -6616,19 +6616,19 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                         return false;
 
                     triggered_spell_id = 31803;
+                    CastSpell(victim, 42463, true);
 
-                    // On target with 5 stacks of Holy Vengeance direct damage is done
-                    if (Aura* aur = victim->GetAura(triggered_spell_id, GetGUID()))
-                    {
-                        CastSpell(victim, 42463, true);
-                        if (aur->GetStackAmount() == 5)
-                        {
-                            if (stacker)
-                                aur->RefreshDuration();
-                            CastSpell(victim, 42463, true);
-                            return true;
-                        }
-                    }
+                    //// On target with 5 stacks of Holy Vengeance direct damage is done
+                    //if (Aura* aur = victim->GetAura(triggered_spell_id, GetGUID()))
+                    //{
+                    //    CastSpell(victim, 42463, true);
+                    //    if (aur->GetStackAmount() == 5)
+                    //    {
+                    //        if (stacker)
+                    //            aur->RefreshDuration();
+                    //        return true;
+                    //    }
+                    //}
 
                     if (!stacker)
                         return false;
@@ -6650,18 +6650,20 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
 
                     triggered_spell_id = 53742;
 
-                    // On target with 5 stacks of Blood Corruption direct damage is done
-                    if (Aura* aur = victim->GetAura(triggered_spell_id, GetGUID()))
-                    {
-                        CastSpell(victim, 53739, true);
-                        if (aur->GetStackAmount() == 5)
-                        {
-                            if (stacker)
-                                aur->RefreshDuration();
-                            CastSpell(victim, 53739, true);
-                            return true;
-                        }
-                    }
+                    CastSpell(victim, 53739, true);
+
+                    //// On target with 5 stacks of Blood Corruption direct damage is done
+                    //if (Aura* aur = victim->GetAura(triggered_spell_id, GetGUID()))
+                    //{
+                    //    CastSpell(victim, 53739, true);
+                    //    if (aur->GetStackAmount() == 5)
+                    //    {
+                    //        if (stacker)
+                    //            aur->RefreshDuration();
+                    //        CastSpell(victim, 53739, true);
+                    //        return true;
+                    //    }
+                    //}
 
                     if (!stacker)
                         return false;
