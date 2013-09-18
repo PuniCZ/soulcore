@@ -263,6 +263,8 @@ enum Events
     EVENT_TELEPORT                  = 61,
     EVENT_MOVE_TO_LICH_KING         = 62,
     EVENT_DESPAWN_SELF              = 63,
+    // Spirit Bombs Explosion delay
+    EVENT_SPELL_EXPLOSION           = 64, 
 };
 
 enum EventGroups
@@ -1544,7 +1546,7 @@ class npc_valkyr_shadowguard : public CreatureScript
                         {
                             _events.ScheduleEvent(EVENT_MOVE_TO_DROP_POS, 0);
                             break;
-                        }
+                       } 
 
                         DoCastAOE(SPELL_EJECT_ALL_PASSENGERS);
                         me->DespawnOrUnsummon(1000);
@@ -1972,7 +1974,7 @@ class npc_spirit_bomb : public CreatureScript
                 me->SendMovementFlagUpdate();
                 destZ = 1055.0f;    // approximation, gets more precise later
                 me->UpdateGroundPositionZ(destX, destY, destZ);
-                me->SetSpeed(MOVE_FLIGHT, 0.5f, true);
+                me->SetSpeed(MOVE_FLIGHT, 0.4f, true);
                 me->GetMotionMaster()->MovePoint(POINT_GROUND, destX, destY, destZ);
             }
 
@@ -1981,20 +1983,32 @@ class npc_spirit_bomb : public CreatureScript
                 if (type != POINT_MOTION_TYPE || point != POINT_GROUND)
                     return;
 
-                me->RemoveAllAuras();
-                DoCastAOE(SPELL_EXPLOSION);
-                me->DespawnOrUnsummon(1000);
+                _events.ScheduleEvent(EVENT_SPELL_EXPLOSION, 3000); 
             }
 
             void AttackStart(Unit* /*victim*/) OVERRIDE
             {
             }
 
-            void UpdateAI(uint32 /*diff*/) OVERRIDE
-            {
-                UpdateVictim();
-                // no melee attacks
-            }
+            void UpdateAI(uint32 diff) 
+             {
+                 UpdateVictim();
+                 // no melee attacks
+
+                _events.Update(diff);
+
+                while (uint32 eventId = _events.ExecuteEvent())
+                {
+                    if(EVENT_SPELL_EXPLOSION)
+                    {
+                        me->RemoveAllAuras();
+                        DoCastAOE(SPELL_EXPLOSION);
+                        me->DespawnOrUnsummon(1000);
+                    }
+                }
+             }
+         private:
+         EventMap _events; 
         };
 
         CreatureAI* GetAI(Creature* creature) const OVERRIDE
