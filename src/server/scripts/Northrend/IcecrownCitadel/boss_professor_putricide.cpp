@@ -838,7 +838,6 @@ class spell_putricide_gaseous_bloat : public SpellScriptLoader
                 Unit* target = GetTarget();
                 if (Unit* caster = GetCaster())
                 {
-                    if(!target->HasAura(SPELL_VOLATILE_OOZE_ADHESIVE))
                     target->RemoveAuraFromStack(GetSpellInfo()->Id, GetCasterGUID());
                     if (!target->HasAura(GetId()))
                         caster->CastCustomSpell(SPELL_GASEOUS_BLOAT, SPELLVALUE_AURA_STACK, 10, caster, false);
