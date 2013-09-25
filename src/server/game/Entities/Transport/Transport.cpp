@@ -90,7 +90,7 @@ void MapManager::UnLoadTransportFromMap(Transport* t)
         if (t != itr->GetSource()->GetTransport())
             itr->GetSource()->SendDirectMessage(&out_packet);
 
-    t->m_NPCPassengerSet.clear();
+    t->m_NPCPassengerSet.clear();         
     m_TransportsByInstanceIdMap[t->GetInstanceId()].erase(t);
     m_Transports.erase(t);
     t->m_WayPoints.clear();
@@ -101,7 +101,7 @@ void MapManager::UnLoadTransportFromMap(Transport* t)
 void MapManager::LoadTransportForPlayers(Player* player)
 {
     MapManager::TransportMap& tmap = sMapMgr->m_TransportsByInstanceIdMap;
-
+    
     UpdateData transData;
 
     MapManager::TransportSet& tset = tmap[player->GetInstanceId()];
@@ -119,7 +119,7 @@ void MapManager::LoadTransportForPlayers(Player* player)
 void MapManager::UnLoadTransportForPlayers(Player* player)
 {
     MapManager::TransportMap& tmap = sMapMgr->m_TransportsByInstanceIdMap;
-
+    
     UpdateData transData;
 
     MapManager::TransportSet& tset = tmap[player->GetInstanceId()];
@@ -143,7 +143,7 @@ void MapManager::UnLoadTransportForPlayers(Player* player)
     WorldPacket packet;
     transData.BuildPacket(&packet);
     player->SendDirectMessage(&packet);
-}
+} 
 
 void MapManager::LoadTransports()
 {
@@ -831,7 +831,7 @@ Creature* Transport::AddNPCPassengerInInstance(uint32 entry, float x, float y, f
     creature->setActive(true);
     sScriptMgr->OnAddCreaturePassenger(this, creature);
     return creature;
-}
+} 
 
 void Transport::UpdatePosition(MovementInfo* mi)
 {
@@ -879,7 +879,7 @@ void Transport::UpdatePlayerPositions()
         transData.BuildPacket(&packet);
         plr->SendDirectMessage(&packet);
     }
-}
+} 
 
 void Transport::CalculatePassengerPosition(float& x, float& y, float& z, float* o /*= NULL*/) const
 {
