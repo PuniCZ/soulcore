@@ -57,8 +57,8 @@ DELETE FROM `areatrigger_scripts` WHERE `entry` IN (5630, 5628, 5623);
 -- Spell Scripts
 DELETE FROM `spell_script_names` WHERE `spell_id` IN (70713, 68645, 69471, 69488, 69402, 70175, 71335, 71339);
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-('70713', 'spell_icc_remove_rocket_pack'),
-('68645', 'spell_icc_rocket_pack'),
+('70713', 'spell_remove_rocket_pack'),
+('68645', 'spell_rocket_pack'),
 ('69471', 'spell_gb_heat_drain'),
 ('69488', 'spell_gb_overheat_drain'),
 ('69402', 'spell_gb_incinerating_blast'),
@@ -386,14 +386,14 @@ DELETE FROM `gameobject_loot_template` WHERE `entry` IN (28045,28057,28072,28090
 DELETE FROM `reference_loot_template` WHERE `entry` IN (34329,12036,34251,34263,34275);
 
 -- Make Muradin and Saufangs unattackable and unable to attack players (All difficulty modes)
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=36948;
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=36939;
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=38156;
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=38638;
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=38637;
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=38157;
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=38639;
-UPDATE `creature_template` SET `unit_flags`=2, `flags_extra`=2 WHERE `entry`=38640;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=36948;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=36939;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=38156;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=38638;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=38637;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=38157;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=38639;
+UPDATE `creature_template` SET `unit_flags`=0, `flags_extra`=0 WHERE `entry`=38640;
 
 -- Prevent players from exploiting the Rocket pack item outside of raid
 UPDATE `item_template` SET `area` = 4812 WHERE `entry` = 49278;
