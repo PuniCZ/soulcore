@@ -8867,6 +8867,7 @@ void ObjectMgr::LoadDbcDataCorrections()
              case 3690: // Kologarn's right arm
              case 3691: // Kologarn's right arm
              case 3692: // Kologarn's right arm
+             case  158: // Battleground Demolisher
                  veSeatInfo->m_flags = 0;
                  break;
              case 6206: // Bone Spike
