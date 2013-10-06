@@ -1279,10 +1279,10 @@ class npc_gunship_orgrimmar : public CreatureScript
 
             void EnterCombat(Unit* /*who*/)
             {
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+                // me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
                 SetCombatMovement(false);
                 _instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                // me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
 
             void JustDied(Unit* killer)
@@ -1827,6 +1827,9 @@ class npc_gunship_cannon : public CreatureScript
 
             void UpdateAI(uint32 diff)
             {
+                me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_LEFT);
+                me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT);
+                me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_TURNING); 
                 if(me->HasAura(SPELL_BELOW_ZERO))
                 {
                     me->RemoveAurasByType(SPELL_AURA_CONTROL_VEHICLE);
@@ -1838,12 +1841,9 @@ class npc_gunship_cannon : public CreatureScript
                 else
                 {
                     me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-					me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_LEFT);
-					me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT);
-					me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_TURNING);
-					me->AddExtraUnitMovementFlag(MOVEMENTFLAG2_NO_STRAFE);
-					me->AddExtraUnitMovementFlag(MOVEMENTFLAG_LEFT);
-					me->AddExtraUnitMovementFlag(MOVEMENTFLAG_RIGHT);
+                    me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_LEFT);
+                    me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT);
+                    me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_TURNING); 
 
 					
                 }
