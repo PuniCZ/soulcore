@@ -1065,7 +1065,7 @@ class npc_muradin_gunship : public CreatureScript
                             break;
                         case EVENT_RENDING_THROW:
                             if (UpdateVictim())
-                                if (me->GetVictim()->IsWithinDistInMap(me, 30.0f, false))
+                                if (me->GetVictim()->IsWithinDistInMap(me, 50.0f, false))
                                 {
                                     DoCastVictim(SPELL_RENDING_THROW);
                                     EventScheduled = false;
@@ -1128,8 +1128,10 @@ class npc_muradin_gunship : public CreatureScript
                             _instance->SetBossState(DATA_GUNSHIP_EVENT, NOT_STARTED);
                             break;
                         case EVENT_RESTART_EVENT:
-                            _instance->SetBossState(DATA_GUNSHIP_EVENT, FAIL);
-                            RestartEvent(skybreaker, CheckUnfriendlyShip(me,_instance,DATA_GB_HIGH_OVERLORD_SAURFANG), map, ALLIANCE);
+							if(_instance->GetBossState(DATA_GUNSHIP_EVENT) != DONE){
+								_instance->SetBossState(DATA_GUNSHIP_EVENT, FAIL);
+								RestartEvent(skybreaker, CheckUnfriendlyShip(me,_instance,DATA_GB_HIGH_OVERLORD_SAURFANG), map, ALLIANCE);
+							}
                             break;
                         case EVENT_SPAWN_MAGE:
 							if(me->GetEntry() != NPC_GB_SKYBREAKER_SORCERERS){
@@ -1279,10 +1281,10 @@ class npc_gunship_orgrimmar : public CreatureScript
 
             void EnterCombat(Unit* /*who*/)
             {
-                // me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
                 SetCombatMovement(false);
                 _instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me);
-                // me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             }
 
             void JustDied(Unit* killer)
@@ -1827,24 +1829,24 @@ class npc_gunship_cannon : public CreatureScript
 
             void UpdateAI(uint32 diff)
             {
-                me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_LEFT);
-                me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT);
-                me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_TURNING); 
+            	me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_LEFT);
+		me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT);
+		me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_TURNING);
+		
                 if(me->HasAura(SPELL_BELOW_ZERO))
                 {
-                    me->RemoveAurasByType(SPELL_AURA_CONTROL_VEHICLE);
-                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+			me->RemoveAurasByType(SPELL_AURA_CONTROL_VEHICLE);
+			me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 					
                     if (Vehicle* veh = me->GetVehicleKit())
                         veh->RemoveAllPassengers();
                 }
                 else
                 {
-                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_LEFT);
-                    me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT);
-                    me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_TURNING); 
-
+			me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+			me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_LEFT);
+			me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG_STRAFE_RIGHT);
+			me->RemoveExtraUnitMovementFlag(MOVEMENTFLAG2_INTERPOLATED_TURNING);
 					
                 }
             }
@@ -2335,8 +2337,10 @@ class npc_saurfang_gunship : public CreatureScript
                             _instance->SetBossState(DATA_GUNSHIP_EVENT, NOT_STARTED);
                             break;
                         case EVENT_RESTART_EVENT:
-                            _instance->SetBossState(DATA_GUNSHIP_EVENT, FAIL);
-                            RestartEvent(orgrimmar, CheckUnfriendlyShip(me,_instance,DATA_GB_MURADIN_BRONZEBEARD), map, HORDE);
+							if(_instance->GetBossState(DATA_GUNSHIP_EVENT) != DONE){
+								_instance->SetBossState(DATA_GUNSHIP_EVENT, FAIL);
+								RestartEvent(orgrimmar, CheckUnfriendlyShip(me,_instance,DATA_GB_MURADIN_BRONZEBEARD), map, HORDE);
+							}
                             break;
                         case EVENT_RENDING_THROW:
                             if (UpdateVictim())
@@ -3153,7 +3157,7 @@ class spell_remove_rocket_pack : public SpellScriptLoader
  
                 int32 itemId = GetEffectValue();
                 uint32 itemCount = hitPlr->GetItemCount(itemId, false); // Should be 1, but just in case.
-                hitPlr->DestroyItemCount(itemId, -itemCount, true, false);
+                hitPlr->DestroyItemCount(itemId, itemCount, true, false);
             }
  
             void Register()
