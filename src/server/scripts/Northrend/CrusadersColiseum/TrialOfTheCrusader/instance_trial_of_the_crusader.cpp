@@ -40,9 +40,11 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                 EventTimer = 1000;
                 NotOneButTwoJormungarsTimer = 0;
                 ResilienceWillFixItTimer = 0;
+                DedicatedInsanityCheck = 0;
                 SnoboldCount = 0;
                 MistressOfPainCount = 0;
                 TributeToImmortalityEligible = true;
+                TributeToDedicatedInsanityEligible = true;
                 NeedSave = false;
 
                 TirionFordringGUID = 0;
@@ -235,6 +237,8 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                 switch (type)
                 {
                     case BOSS_BEASTS:
+                        if(state == IN_PROGRESS) // Reset achievement requirement if wipe on 1st boss
+                            TributeToDedicatedInsanityEligible = true;
                         break;
                     case BOSS_JARAXXUS:
                         // Cleanup Icehowl
@@ -352,6 +356,12 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                     default:
                         break;
                 }
+                
+                if(state == IN_PROGRESS)
+                {
+                    CheckTributeToDedicatedInsanity();
+                    DedicatedInsanityCheck = 3000;
+                }
 
                 if (IsEncounterInProgress())
                 {
@@ -464,11 +474,20 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                         else if (data == DECREASE)
                             --MistressOfPainCount;
                         break;
-                    case DATA_TRIBUTE_TO_IMMORTALITY_ELIGIBLE:
-                        TributeToImmortalityEligible = false;
+                    case DATA_TRIBUTE_TO_DEDICATED_INSANITY_ELIGIBLE:
+                        TributeToDedicatedInsanityEligible = data;
                         break;
                     default:
                         break;
+                }
+            }
+
+            void OnUnitDeath(Unit* unit)
+            {
+                if (unit->GetTypeId() == TYPEID_PLAYER && IsEncounterInProgress())
+                {
+                    TributeToImmortalityEligible = false;
+                    SaveToDB();
                 }
             }
 
@@ -646,6 +665,18 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                     else
                         ResilienceWillFixItTimer -= diff;
                 }
+
+                if (IsEncounterInProgress())
+                {
+                    if(DedicatedInsanityCheck <= diff)
+                    {
+                        CheckTributeToDedicatedInsanity(true);
+                        DedicatedInsanityCheck = 3000;
+                    }
+                    else
+                        DedicatedInsanityCheck -= diff;
+
+                }
             }
 
             void Save()
@@ -658,6 +689,8 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                     saveStream << GetBossState(i) << ' ';
 
                 saveStream << TrialCounter;
+                saveStream << ' ';
+                saveStream << TributeToDedicatedInsanityEligible ? 1 : 0;
                 SaveDataBuffer = saveStream.str();
 
                 SaveToDB();
@@ -692,6 +725,7 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                 }
 
                 loadStream >> TrialCounter;
+                loadStream >> TributeToDedicatedInsanityEligible;
                 EventStage = 0;
 
                 OUT_LOAD_INST_DATA_COMPLETE;
@@ -726,10 +760,108 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                     case A_TRIBUTE_TO_IMMORTALITY_ALLIANCE:
                         return TrialCounter == 50 && TributeToImmortalityEligible;
                     case A_TRIBUTE_TO_DEDICATED_INSANITY:
-                        return false/*uiGrandCrusaderAttemptsLeft == 50 && !bHasAtAnyStagePlayerEquippedTooGoodItem*/;
+                        return TrialCounter == 50 && TributeToDedicatedInsanityEligible;
                     default:
                         break;
                 }
+                return false;
+            }
+
+            void CheckTributeToDedicatedInsanity(bool inCombat = false)
+            {
+                if(!TributeToDedicatedInsanityEligible)
+                    return;
+
+                Map::PlayerList const &PlayerList = instance->GetPlayers();
+                if(PlayerList.isEmpty())
+                    return;
+
+                for (Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
+                {
+                    if (Player* player = itr->GetSource())
+                    {
+                        if(player->IsGameMaster())
+                            continue;
+
+                        for (uint8 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+                        {
+                            if (i == EQUIPMENT_SLOT_TABARD || i == EQUIPMENT_SLOT_BODY)
+                                continue;
+
+                            if (inCombat) // Only check weapons
+                                if (i != EQUIPMENT_SLOT_MAINHAND && i != EQUIPMENT_SLOT_OFFHAND && i != EQUIPMENT_SLOT_RANGED)
+                                    continue;
+
+                            Item* pItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, i);
+                            if(pItem)
+                            {
+                                if(!IsItemEligible(pItem))
+                                {
+                                    SetData(DATA_TRIBUTE_TO_DEDICATED_INSANITY_ELIGIBLE, false);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            bool IsItemEligible(Item *pItem)
+            {
+                if(!pItem)
+                    return true;
+
+                ItemTemplate const* proto = pItem->GetTemplate();
+
+                uint32 iLevel = proto->ItemLevel;
+                uint32 iEntry = pItem->GetEntry();
+
+                if(iLevel > 258)
+                    return false;
+
+                if (iLevel == 258)
+                {
+                    switch(iEntry)
+                    {
+                    case 48666:
+                    case 48667:
+                    case 48668:
+                    case 48669:
+                    case 48670:
+                        return true;
+                    }
+                }
+                else if (iLevel == 245)
+                {
+                    switch(iEntry)
+                    {
+                        case 46017: // Val'anyr
+                            return true;
+                        case 46970: // BoE Items dropped ToC25n not included
+                        case 47089:
+                        case 47105:
+                        case 47149:
+                        case 47223:
+                        case 47257:
+                        case 47278:
+                        case 47291:
+                        case 47297:
+                        case 47315:
+                            return false;
+                    }
+                    
+                    if(pItem->GetTemplate()->Flags & ITEM_PROTO_FLAG_HEROIC // 245iLevel && heroic = toc10h items
+                        || pItem->GetTemplate()->Flags & ITEM_PROTO_FLAG_REFUNDABLE // 245iLevel && refundable = triumph emblems items, tier 9,5
+                        || pItem->GetTemplate()->Bonding == BIND_WHEN_EQUIPED) // 245iLevel BoE = crafting items
+                        return true;
+
+                    /*ItemSetEntry const* set = sItemSetStore.LookupEntry(pItem->GetTemplate()->ItemSet); // Not used, Flag refundable is OK
+                    //@TODO: Only 9.5 tiers
+                    if(!set)
+                        return false;*/
+                }
+                else if (iLevel < 245)
+                    return true;
 
                 return false;
             }
@@ -769,9 +901,11 @@ class instance_trial_of_the_crusader : public InstanceMapScript
                 // Achievement stuff
                 uint32 NotOneButTwoJormungarsTimer;
                 uint32 ResilienceWillFixItTimer;
+                uint32 DedicatedInsanityCheck;
                 uint8  SnoboldCount;
                 uint8  MistressOfPainCount;
                 bool   TributeToImmortalityEligible;
+                bool   TributeToDedicatedInsanityEligible;
         };
 
         InstanceScript* GetInstanceScript(InstanceMap* map) const OVERRIDE

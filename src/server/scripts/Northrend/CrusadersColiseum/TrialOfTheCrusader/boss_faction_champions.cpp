@@ -645,9 +645,6 @@ struct boss_faction_championsAI : public BossAI
                 else
                     if (Creature* temp = Unit::GetCreature(*me, instance->GetData64(NPC_GARROSH)))
                         temp->AI()->Talk(SAY_KILL_PLAYER);
-
-
-                instance->SetData(DATA_TRIBUTE_TO_IMMORTALITY_ELIGIBLE, 0);
             }
         }
     }

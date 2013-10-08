@@ -191,11 +191,8 @@ struct boss_twin_baseAI : public BossAI
     void KilledUnit(Unit* who) OVERRIDE
     {
         if (who->GetTypeId() == TYPEID_PLAYER)
-        {
             Talk(SAY_KILL_PLAYER);
-            if (instance)
-                instance->SetData(DATA_TRIBUTE_TO_IMMORTALITY_ELIGIBLE, 0);
-        }
+
     }
 
     void JustSummoned(Creature* summoned) OVERRIDE

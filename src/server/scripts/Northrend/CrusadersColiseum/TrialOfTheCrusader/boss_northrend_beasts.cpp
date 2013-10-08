@@ -543,13 +543,6 @@ struct boss_jormungarAI : public BossAI
         me->DespawnOrUnsummon();
     }
 
-    void KilledUnit(Unit* who) OVERRIDE
-    {
-        if (who->GetTypeId() == TYPEID_PLAYER)
-            if (instance)
-                instance->SetData(DATA_TRIBUTE_TO_IMMORTALITY_ELIGIBLE, 0);
-    }
-
     void EnterCombat(Unit* /*who*/) OVERRIDE
     {
         _EnterCombat();
@@ -942,15 +935,6 @@ class boss_icehowl : public CreatureScript
                     instance->SetData(TYPE_NORTHREND_BEASTS, FAIL);
                 }
                 me->DespawnOrUnsummon();
-            }
-
-            void KilledUnit(Unit* who) OVERRIDE
-            {
-                if (who->GetTypeId() == TYPEID_PLAYER)
-                {
-                    if (instance)
-                        instance->SetData(DATA_TRIBUTE_TO_IMMORTALITY_ELIGIBLE, 0);
-                }
             }
 
             void EnterCombat(Unit* /*who*/) OVERRIDE

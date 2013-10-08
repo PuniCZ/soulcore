@@ -36,6 +36,7 @@ class LFGPlayerScript : public PlayerScript
 
         // Player Hooks
         void OnLevelChanged(Player* player, uint8 oldLevel);
+        void OnEquipItem(Player* player, uint32 item); 
         void OnLogout(Player* player);
         void OnLogin(Player* player);
         void OnBindToInstance(Player* player, Difficulty difficulty, uint32 mapId, bool permanent);

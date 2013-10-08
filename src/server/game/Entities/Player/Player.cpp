@@ -12543,6 +12543,8 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, pItem->GetEntry());
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, pItem->GetEntry(), slot);
 
+    sScriptMgr->OnPlayerEquipItem(this, pItem->GetEntry()); 
+
     return pItem;
 }
 
@@ -12566,6 +12568,8 @@ void Player::QuickEquipItem(uint16 pos, Item* pItem)
            CastSpell(this, 49152, true);
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, pItem->GetEntry());
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, pItem->GetEntry(), slot);
+
+        sScriptMgr->OnPlayerEquipItem(this, pItem->GetEntry()); 
     }
 }
 
